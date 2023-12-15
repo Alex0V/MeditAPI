@@ -2,7 +2,9 @@
 using Medit.DAL.Entities;
 using Medit.BLL.DTO.Requests;
 using Medit.BLL.DTO.Responses;
-using System;
+using Medit.BLL.DTO.Responses.CompletedSession;
+using Medit.DAL.Entities.HelpModel;
+using Medit.BLL.DTO.Requests.CompletedSession;
 
 namespace Medit.BLL.AutoMapper
 {
@@ -18,12 +20,18 @@ namespace Medit.BLL.AutoMapper
         {
             CreateMap<CompletedSession, CompletedSessionResponse>();
             CreateMap<CompletedSessionRequest, CompletedSession>();
+            CreateMap<CombinedDataModel, RecordsByTimeIntervalRespons>()
+                .ForMember(dest => dest.CompletedDateTime, opt => opt.MapFrom(src => src.CompletedSession.AuditionDate))
+                .ForMember(dest => dest.SessionName, opt => opt.MapFrom(src => src.Session.SessionName))
+                .ForMember(dest => dest.Meditation, opt => opt.MapFrom(src => src.Meditation.Name));
+            CreateMap<AddCompletedSessionRequest, CompletedSession>()
+                .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => src.SessionId));
         }
 
-        private void CreateSessionGroupMaps()
+        private void CreateMeditationMaps()
         {
-            CreateMap<SessionGroup, SessionGroupResponse>();
-            CreateMap<SessionGroupRequest, SessionGroup>();
+            CreateMap<Meditation, MeditationResponse>();
+            CreateMap<MeditationRequest, Meditation>();
         }
 
         private void CreateSessionMaps()
@@ -36,7 +44,7 @@ namespace Medit.BLL.AutoMapper
         {
             CreateUserMaps();
             CreateCompletedSessionMaps();
-            CreateSessionGroupMaps();
+            CreateMeditationMaps();
             CreateSessionMaps();
         }
 

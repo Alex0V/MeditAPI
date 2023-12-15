@@ -2,13 +2,9 @@
 
 namespace Medit.BLL.Models
 {
-    public class FormMeditModel
+    public class FormSessionModel
     {
         public string Name { get; set; } = null!;
-
-        public string Description { get; set; } = null!;
-
-        public string Duration { get; set; } = null!;
 
         public IFormFile image { get; set; } = null!;
     }

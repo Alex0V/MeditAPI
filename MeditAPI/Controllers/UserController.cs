@@ -10,7 +10,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Text;
-using System;
 using Medit.DAL.Context;
 using Medit.BLL.DTO.Others;
 using Medit.BLL.Helpers;
@@ -33,6 +32,7 @@ namespace MeditAPI.Controllers
             _emailService = emailService;
         }
 
+        [AllowAnonymous]
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] User userObj)
         {
@@ -63,6 +63,7 @@ namespace MeditAPI.Controllers
             });
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] User userObj)
         {
@@ -96,7 +97,7 @@ namespace MeditAPI.Controllers
                 });
             }
             userObj.Password = PasswordHasher.HashPassword(userObj.Password);
-            userObj.Role = "Admin";
+            userObj.Role = "User";
             userObj.Token = "";
             await _dbContext.Users.AddAsync(userObj);
             await _dbContext.SaveChangesAsync();
@@ -145,7 +146,7 @@ namespace MeditAPI.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.Now.AddSeconds(10),
+                Expires = DateTime.Now.AddHours(7),
                 SigningCredentials = credentials,
             };
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
@@ -189,6 +190,7 @@ namespace MeditAPI.Controllers
 
         }
 
+        [AllowAnonymous]
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenApiDto tokenApiDto)
         {
@@ -218,6 +220,7 @@ namespace MeditAPI.Controllers
             });
         }
 
+        [AllowAnonymous]
         [HttpPost("send-reset-email/{email}")]
         public async Task<IActionResult> SendEmail(string email)
         {
@@ -246,6 +249,7 @@ namespace MeditAPI.Controllers
             });
         }
 
+        [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {

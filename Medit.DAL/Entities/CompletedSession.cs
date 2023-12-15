@@ -10,6 +10,6 @@ namespace Medit.DAL.Entities
         public int SessionId { get; set; }
         public Session? Sessions { get; set; }
 
-        public int SessionСounter { get; set; }
+        public DateTime AuditionDate { get; set; }
     }
 }

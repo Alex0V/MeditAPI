@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Medit.BLL.DTO.Responses
+﻿namespace Medit.BLL.DTO.Responses
 {
-    public class SessionGroupResponse
+    public class MeditationResponse
     {
         public int Id { get; set; }
         public string? GroupName { get; set; }

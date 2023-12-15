@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Medit.BLL.DTO.Responses
+﻿namespace Medit.BLL.DTO.Responses
 {
     public class UserResponse
     {

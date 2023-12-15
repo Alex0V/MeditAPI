@@ -2,18 +2,13 @@
 using Medit.DAL.Entities.Base;
 using Medit.DAL.Interfaces.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Medit.DAL.Data.Repositories.Base
+namespace Medit.DAL.Repositories.Base
 {
     public abstract class GenericRepository<T> : IGenericRepository<T> where T : Entity, new()
     {
         protected readonly MeditDBContext context;
-        private DbSet<T> table;
+        private readonly DbSet<T> table;
         public bool AutoSaveChanges { get; set; } = true;
 
         public GenericRepository(MeditDBContext dbContext)

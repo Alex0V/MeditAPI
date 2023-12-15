@@ -12,14 +12,14 @@ namespace Medit.DAL.Context
         public DbSet<CompletedSession> CompletedSessions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
-        public DbSet<SessionGroup> SessionGroups { get; set; }
+        public DbSet<Meditation> Meditations { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfig());
             modelBuilder.ApplyConfiguration(new SessionConfig());
-            modelBuilder.ApplyConfiguration(new SessionGroupConfig());
+            modelBuilder.ApplyConfiguration(new MeditationConfig());
             modelBuilder.ApplyConfiguration(new CompletedSessionConfig());
             base.OnModelCreating(modelBuilder);
         }

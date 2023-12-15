@@ -1,26 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Medit.BLL.DTO.Requests;
 using Medit.BLL.DTO.Responses;
 using Medit.BLL.Interfaces.Services;
 using Medit.DAL.Entities;
-using Medit.DAL.Interfaces;
 using Medit.DAL.Interfaces.Repositories;
 
 namespace Medit.BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUnitOfWork unitOfWork;
-
         private readonly IMapper mapper;
-
         private readonly IUserRepository userRepository;
-
 
         public async Task<IEnumerable<UserResponse>> GetAll()
         {
@@ -37,27 +27,23 @@ namespace Medit.BLL.Services
         {
             var review = mapper.Map<User>(request);
             userRepository.Insert(review);
-            unitOfWork.SaveChangesAsync();
         }
 
         public void Update(UserRequest request)
         {
             var review = mapper.Map<User>(request);
             userRepository.Update(review);
-            unitOfWork.SaveChangesAsync();
         }
 
         public void Delete(int id)
         {
             userRepository.Delete(id);
-            unitOfWork.SaveChangesAsync();
         }
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IMapper mapper, IUserRepository userRepository)
         {
-            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
-            userRepository = this.unitOfWork.userRepository;
+            this.userRepository = userRepository;
         }
     }
 }

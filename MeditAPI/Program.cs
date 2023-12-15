@@ -1,18 +1,16 @@
 using Medit.BLL.Interfaces.Services;
 using Medit.BLL.Services;
 using Medit.DAL.Context;
-using Medit.DAL.Data.Repositories;
 using Medit.DAL.Interfaces.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MeditAPI.UtilityService;
 using System.Text;
-using Medit.DAL.Data;
-using Medit.DAL.Interfaces;
-using Medit.DAL.Interfaces.Repositories.Base;
-using Medit.DAL.Data.Repositories.Base;
 using WebAPI.Services;
+using Medit.DAL.Repositories;
+using Medit.DAL.Interfaces.Repositories.Base;
+using Medit.DAL.Repositories.Base;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,11 +31,9 @@ builder.Services.AddDbContext<MeditDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Add Repositories DI
-builder.Services.AddScoped<ISessionGroupRepository, SessionGroupRepository>();
+builder.Services.AddScoped<IMeditationRepository, MeditationRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<ICompletedSessionRepository, CompletedSessionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -45,11 +41,13 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 // Add AutoMapper DI
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Add Services DI
-builder.Services.AddScoped<ISessionGroupService, SessionGroupService>();
+builder.Services.AddScoped<IMeditationService, MeditationService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<ICompletedSessionService, CompletedSessionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStorageService, StorageService>();
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>

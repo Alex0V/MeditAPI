@@ -2,30 +2,42 @@
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using Medit.BLL.Interfaces.Services;
+using Medit.BLL.Models;
+using Microsoft.AspNetCore.Http;
 using WebAPI.Models;
 
 namespace WebAPI.Services
 {
     public class StorageService : IStorageService
     {
-        public async Task<S3ResponseDto> UploadFileAsync(S3Object s3obj, AwsCredentials awsCredentials)
+        public async Task<S3ResponseDto> UploadFileAsync(IFormFile image, AwsCredentials awsCredentials)
         {
+            var response = new S3ResponseDto();
+
+            await using var memoryStr = new MemoryStream();
+            await image.CopyToAsync(memoryStr);
+
+            var fileExt = Path.GetExtension(image.FileName);
+            if (string.IsNullOrEmpty(fileExt))
+            {
+                response.StatusCode = 400;
+                response.Message = $"Path.GetExtension don't get extention({fileExt})";
+                return response;
+            }
+            var objName = $"{Guid.NewGuid()}{fileExt}";
             var credential = new BasicAWSCredentials(awsCredentials.AwsKey, awsCredentials.AwsSecretKey);
 
             var config = new AmazonS3Config()
             {
                 RegionEndpoint = Amazon.RegionEndpoint.EUWest2,
             };
-
-            var response = new S3ResponseDto();
-
             try
             {
                 var uploadRequest = new TransferUtilityUploadRequest()
                 {
-                    InputStream = s3obj.InputStream,
-                    Key = s3obj.Name,
-                    BucketName = s3obj.BucketName,
+                    InputStream = memoryStr,
+                    Key = objName.ToString(),
+                    BucketName = "medi-coursework",
                     CannedACL = S3CannedACL.NoACL
                 };
                 using var client = new AmazonS3Client(credential, config);
@@ -34,8 +46,10 @@ namespace WebAPI.Services
                 await transferUtility.UploadAsync(uploadRequest);
 
                 response.StatusCode = 200;
-                response.Message = $"{s3obj.Name} has been uploaded successfully";
-            }catch(AmazonS3Exception ex)
+                response.Message = $"file uploaded successfully";
+                response.FileName = objName;
+            }
+            catch(AmazonS3Exception ex)
             {
                 response.StatusCode = (int)ex.StatusCode;
                 response.Message = ex.Message;
@@ -47,7 +61,7 @@ namespace WebAPI.Services
             return response;
         }
 
-        public async Task<string> GetPrivateImageUrl(S3Object s3obj, AwsCredentials awsCredentials)
+        public async Task<string> GetPrivateImageUrlAsync(string fileName, AwsCredentials awsCredentials)
         {
             var credential = new BasicAWSCredentials(awsCredentials.AwsKey, awsCredentials.AwsSecretKey);
 
@@ -61,15 +75,34 @@ namespace WebAPI.Services
             {
                 var request = new Amazon.S3.Model.GetPreSignedUrlRequest
                 {
-                    BucketName = s3obj.BucketName,
-                    Key = s3obj.Name,
-                    Expires = DateTime.UtcNow.AddHours(1) // Тривалість дії підписаного URL
+                    BucketName = "medi-coursework",
+                    Key = fileName,
+                    Expires = DateTime.UtcNow.AddDays(7) // Тривалість дії підписаного URL
                 };
-
                 string url = client.GetPreSignedURL(request);
                 return url;
             }
         }
 
+        public async Task DeleteFileAsync(string fileName, AwsCredentials awsCredentials)
+        {
+            var credential = new BasicAWSCredentials(awsCredentials.AwsKey, awsCredentials.AwsSecretKey);
+
+            var config = new AmazonS3Config()
+            {
+                RegionEndpoint = Amazon.RegionEndpoint.EUWest2,
+            };
+
+
+            using (var client = new AmazonS3Client(credential, config))
+            {
+                var request = new Amazon.S3.Model.DeleteObjectRequest
+                {
+                    BucketName = "medi-coursework",
+                    Key = fileName
+                };
+                await client.DeleteObjectAsync(request);
+            }
+        }
     }
 }

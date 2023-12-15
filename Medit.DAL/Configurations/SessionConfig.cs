@@ -11,9 +11,10 @@ namespace Medit.DAL.Configurations
         {
             builder.HasKey(e => e.Id);
             
-            builder.HasOne(x => x.SessionGroup)
+            builder.HasOne(x => x.Meditation)
                 .WithMany(x => x.Sessions)
-                .HasForeignKey(x => x.SessionGroupId);
+                .HasForeignKey(x => x.MeditationId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             new SessionSeeding().Seed(builder);
         }

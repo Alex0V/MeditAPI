@@ -8,8 +8,7 @@ namespace Medit.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<CompletedSession> builder)
         {
-            builder.HasKey(sc => new { sc.UserId, sc.SessionId });
-
+            builder.HasKey(sc => sc.Id);
 
             builder.HasOne(x => x.User)
                 .WithMany(x => x.СompletedSessions)
